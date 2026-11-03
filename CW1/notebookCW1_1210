@@ -1,0 +1,42 @@
+
+┌──────────────────────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│     Brief criterion      │                                                                                What's in the notebook                                                                                │
+├──────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ 1. Data & pre-processing │ Data quality checks, whether BMI is missing at random, class balance (4.9% stroke), feature plots, confounding with age, and a pre-processing pipeline that can't leak test data     │
+├──────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ 2. Training & validation │ Stratified 80/20 split, 5×5 repeated cross-validation, and three experiments: class imbalance, regularisation (C, L1 vs L2), and features/linearity                                  │
+├──────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ 3. Accuracy & efficiency │ Reasons for the metric choices, a baseline that always predicts "no stroke", test results with confidence intervals, a solver comparison, and runtime/memory scaling up to 400k rows │
+├──────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ 4. Visualisation         │ 12 figures saved in figures/, ready for the report, including a pipeline diagram for template Section 2                                                                              │
+├──────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ 5. Reproducibility       │ Fixed seed, library versions printed, explanation alongside every result                                                                                                             │
+└──────────────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+Headline results:
+- Accuracy is misleading here. The always-"no stroke" baseline gets 95.1% accuracy and catches no strokes.
+- Class weighting fixes the cut-off, not the ranking. It doesn't improve ROC-AUC (0.85 either way), but it moves recall from 2% to 80%.
+- Final test result: ROC-AUC 0.835 (95% CI 0.77–0.89). The model catches 40 of 50 strokes, with precision of 0.14.
+- The model underfits; it doesn't overfit. The train/validation gap is only about 0.005. More data or adding squared terms doesn't help; the limit is how informative the features are.
+- Main predictors: age (odds ratio 4.5 per standard deviation), missing BMI, hypertension and glucose. Heart disease is dropped because age and hypertension already carry its information.
+
+Still to do:
+- The 5-page report. Every interpretation cell has the numbers and reasoning you need for each template section. You'll need to write it yourself to fit the template, which doesn't fit a notebook dump anyway.
+- Rename files for submission to ENG4200_CW1_2687140P.ipynb and .pdf, and submit the figures/ folder or regenerate it by running the notebook.
+- Check your course's policy on AI assistance. Make sure you understand each step well enough to defend it, because the marking scheme rewards justification over raw results.
+
+If you'd like help structuring the report, I can draft section-by-section bullet points for you to write up.
+
+❯ will you save this output? If i leave and then come back will it still be here?
+
+Yes, the work itself is saved. Everything that matters is in your CW1 folder on disk, so it will still be there when you come back:
+
+- CW1_ENG4200.ipynb: the full notebook, with all outputs, tables and plots already in it.
+- figures/: the 12 figures as PNG files, ready for the report.
+- CW1_ENG4200_backup_original.ipynb: your original version.
+
+What won't necessarily last:
+
+- This chat. You can usually reopen past sessions from the session history in the Claude Code panel in VS Code, but don't count on it long-term. The important explanations are written into the notebook's markdown cells, so you won't lose them.
+- My scratch files. The script I used to generate the notebook was in a temporary folder that gets cleaned up. You don't need it: the notebook stands on its own and you can edit it directly.
+- My memory of this session. If you start a fresh conversation, I won't remember it unless I save a note. I can save a short one (CW1 on stroke data, the BMI-imputation decision, where the files are, and that the report is the next step), so a future session picks up straight away. Want me to?

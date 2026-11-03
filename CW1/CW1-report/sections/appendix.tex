@@ -1,0 +1,29 @@
+% Template: optional appendix, maximum 1 page. Extra plots only.
+% Sources: notebook cells 4 (BMI histogram), 9 (stroke rates, distributions) and 10 (correlation).
+\clearpage
+\appendix
+\section*{Appendix}
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.8\textwidth]{stroke_rates.png}
+\caption{Stroke rate within each category. The dashed line is the overall stroke rate (4.87\%).}
+\label{fig:rates}
+\end{figure}
+
+% Two plots side by side: each minipage takes just under half the text width.
+\begin{figure}[!h]
+\centering
+\begin{minipage}[b]{0.36\textwidth}
+\centering
+\includegraphics[width=\textwidth]{bmi_histogram.png}
+\caption{BMI distribution with the mean and median. The long right tail pulls the mean above the median.}
+\label{fig:bmi}
+\end{minipage}\hspace{2em}
+\begin{minipage}[b]{0.36\textwidth}
+\centering
+\includegraphics[width=\textwidth]{correlation.png}
+\caption{Correlation between the numeric features and stroke.}
+\label{fig:corr}
+\end{minipage}
+\end{figure}

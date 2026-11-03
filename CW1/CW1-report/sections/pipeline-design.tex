@@ -1,0 +1,38 @@
+\section{Pipeline Design}
+% The template has no separate exploration section, so the data investigation
+% (20% of the marks) is described here as the first stage of the pipeline.
+% Sources: notebook cells 3-8 (exploration) and 13-14, 16, 20, 24 (model).
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\textwidth]{pipeline.png}
+\caption{Pipeline from raw data to the final evaluation. Every step under the bracket only sees training rows.}
+\label{fig:pipeline}
+\end{figure}
+
+\textbf{Data investigation.}
+BMI is missing for 201 patients (3.9\%), but 40 of them had a stroke, which is 16.06\% of all stroke cases, so dropping these rows would remove too much of the minority class.
+The missing values were instead filled with the median BMI rather than the mean (28.10 and 28.89 on the full data; the model learns the median from the training rows only), because BMI is positively skewed (skew 1.06, with values up to 97.6; Figure~\ref{fig:bmi}).
+The ID column was dropped, as was the single `Other' gender row, which had no stroke cases and so carries no information for stroke detection.
+`Unknown' smoking status (1,544 patients, 30\%) was kept as its own category: it is not random, as these patients are much younger (mean age 30) and many are children, so filling it in would invent smoking histories for children.
+Range checks found no impossible values: the binary columns contain only 0 and 1, and the 115 non-integer ages (at most 1.88) are infants recorded in months, so they are not errors.
+Stroke rate rises sharply with age, from 0.1\% in the 18--33 band to 17.4\% in the 68--89 band (UKHSA age bands), and stroke patients also show a second peak at high glucose levels (Figure~\ref{fig:dist}).
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.72\textwidth]{distributions.png}
+\caption{Distributions of age, average glucose level and BMI for patients without (0) and with (1) a stroke.}
+\label{fig:dist}
+\end{figure}
+
+Stroke rates are also much higher with hypertension (about 13\% vs 4\%) and heart disease (about 17\% vs 4\%), while ever-married patients (6.6\% vs 1.7\%) and children (almost 0\%) mostly reflect age (Figure~\ref{fig:rates}).
+No numeric feature correlates strongly with stroke (age is highest at 0.25, BMI lowest at 0.04), and no pair of features is strongly correlated (maximum 0.32, age and BMI; Figure~\ref{fig:corr}), so collinearity is not a concern for logistic regression and all features were kept.
+All ages were also kept to avoid biasing the model. Most exploration figures are in the Appendix.
+
+\textbf{Model pipeline.}
+Figure~\ref{fig:pipeline} shows the full pipeline.
+The data was split 80/20 with stratification (\texttt{random\_state=8}), giving 4,087 training and 1,022 test patients with the same stroke share (4.87\% and 4.89\%).
+Inside the sklearn Pipeline, numeric features are median-imputed and standardised, and categorical features are one-hot encoded, giving 20 features.
+Because the pipeline is refitted inside every cross-validation fold, the median and scaling are learned from training rows only, which prevents data leakage.
+Logistic regression with \texttt{class\_weight='balanced'} was tuned with 5-fold stratified cross-validation over seven values of $C$ from $10^{-3}$ to $10^{3}$, scored on F1.
+The decision threshold was chosen from cross-validated probabilities on the training rows, and no decisions were made on the test set, which was used only for the final evaluation.

@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 .venv/
 .ipynb_checkpoints/
+CW1/.vscode/
+CW1/claude_progress_notes.md
+*.png
+CW1/CW1-report/.texbuild/

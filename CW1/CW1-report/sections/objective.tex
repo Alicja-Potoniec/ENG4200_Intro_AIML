@@ -1,0 +1,6 @@
+\section{Objective}
+% Template asks for 3-4 sentences: the task, the dataset, and what you tested.
+% Sources: notebook cells 1, 3 and 16.
+This exercise applies logistic regression to a stroke classification task: predicting whether a patient has had a stroke from information about demographic, lifestyle and clinical information.
+The stroke prediction dataset contains 5,110 patient records with 10 features, and only 249 (4.87\%) are stroke cases, so a model that always predicts `no stroke' already scores 95.13\% accuracy.
+The aim was to test whether class weighting and regularisation could turn this into a model that actually finds stroke patients, judged on recall, precision, F1 and ROC-AUC rather than accuracy, and to measure its computational cost in fit time, prediction time and memory.

@@ -1,0 +1,37 @@
+\section{Analysis \& Reflection}
+% Sources: notebook cells 19, 21, 23, 25, 27, 30 and 31.
+
+\subsection*{What worked well}
+Balanced class weights were the single most effective change, turning a model that never predicted a stroke into one with a cross-validated recall of 0.824 at no extra computational cost.
+Keeping preprocessing inside the pipeline made every cross-validation score leakage-free.
+The coefficients (Figure~\ref{fig:coef}) are easy to interpret and agree with the exploration (Figure~\ref{fig:rates}): age is by far the strongest predictor, followed by average glucose level, hypertension and heart disease.
+
+% Two plots side by side: each minipage gets its own caption and label.
+% [c] centres the two minipages on each other vertically; [b] would line up their bottoms.
+\begin{figure}[!htb]
+\centering
+\begin{minipage}[c]{0.34\textwidth}
+\centering
+\includegraphics[width=\textwidth]{coefficients.png}
+\caption{Coefficients of the final model on standardised features. Positive values raise the predicted stroke risk.}
+\label{fig:coef}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.62\textwidth}
+\centering
+\includegraphics[width=\textwidth]{learning_curve.png}
+\caption{Learning curve (left) and fit time (right) against the number of training rows, with 5-fold cross-validation.}
+\label{fig:lc}
+\end{minipage}
+\end{figure}
+
+\subsection*{Difficulties and limitations}
+The class imbalance was the main difficulty: even after weighting, precision stays low (0.13), so most flagged patients did not have a stroke.
+Balanced weighting also shifts the predicted probabilities upwards, so they were used only to choose a threshold, not as a patient's real chance of a stroke.
+The test set contains only 50 strokes, so each one changes recall by 0.02; this helps explain why test recall (0.72) is lower than cross-validated recall (0.824).
+Finally, logistic regression can only draw a linear decision boundary, and the flat learning curve suggests that this, together with the available features, limits performance more than the amount of data.
+
+\subsection*{Overfitting}
+Overfitting was addressed with stratified 5-fold cross-validation, preprocessing fitted on training rows only, a test set held back until the end, and $L_2$ regularisation tuned through $C$.
+Cross-validated F1 stayed between 0.228 and 0.234 for every $C$ from 0.001 to 1000, differences smaller than the spread between folds (std $\approx$ 0.01), and training and validation F1 were almost identical (0.235 vs 0.234 at $C=0.01$).
+The learning curve (Figure~\ref{fig:lc}) confirms this: training and validation F1 converge at about 0.235 at full size.
+The model is therefore not overfitting, and $C=0.01$ was chosen as the simpler of several effectively tied models.

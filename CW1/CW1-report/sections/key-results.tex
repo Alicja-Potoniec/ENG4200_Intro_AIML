@@ -1,0 +1,62 @@
+\section{Key Results}
+% Sources: notebook cells 16, 18, 20, 24 (cross-validation), 26 and 29 (test set).
+% Final-model test values are from classification_report; unweighted test values from its confusion matrix (0 of 50 strokes).
+Table~\ref{tab:results} compares the experiments with 5-fold cross-validation on the training rows, followed by the single test-set evaluation.
+Accuracy is shown but not used to choose the model, because the unweighted model matches the 95.13\% majority baseline while finding almost no strokes.
+All metrics come from the classification confusion matrix: recall is the share of real strokes the model catches, precision is the share of flagged patients who really had a stroke, and F1 is their harmonic mean.
+F1 runs from 0 to 1 (best) and is only high when both are high. ROC-AUC is threshold-free: it measures how well the predicted probabilities rank stroke patients above non-stroke patients.
+
+\begin{table}[!htb]
+\centering
+\begin{tabular}{lcccc}
+\hline
+Model & Accuracy & Precision & Recall & F1 \\
+\hline
+\multicolumn{5}{l}{\textit{5-fold cross-validation, training rows (4,087 patients)}} \\
+Majority baseline (always `no stroke') & 0.951 & -- & 0.000 & 0.000 \\
+Baseline LogReg, unweighted ($C=1$) & 0.951 & 0.200 & 0.005 & 0.010 \\
+LogReg, balanced ($C=1$) & 0.739 & 0.133 & 0.789 & 0.228 \\
+LogReg, balanced, tuned ($C=0.01$) & 0.737 & 0.137 & 0.824 & 0.234 \\
+\hline
+\multicolumn{5}{l}{\textit{Held-out test set (1,022 patients, 50 strokes), threshold 0.5}} \\
+Baseline LogReg, unweighted ($C=1$) & 0.951 & 0.000 & 0.000 & 0.000 \\
+Final model (balanced, $C=0.01$) & 0.76 & 0.13 & 0.72 & 0.22 \\
+\hline
+\end{tabular}
+\caption{Performance of each experiment. LogReg - logistic regression classifier. The majority baseline never predicts a stroke, so its precision is undefined (0/0) and its recall and F1 are zero by definition.}
+\label{tab:results}
+\end{table}
+
+Class weighting made the biggest difference: cross-validated recall rose from 0.005 to 0.789 and F1 from 0.010 to 0.228, while tuning $C$ added only a little (F1 0.234).
+
+\textbf{Threshold.}
+The decision threshold was chosen from cross-validated probabilities on the training rows (Figure~\ref{fig:thresh}).
+Lowering the threshold raises recall but flags more patients for a follow-up.
+A threshold of 0.5 flags the fewest patients (29.5\%) while keeping recall above 0.8 (0.824); raising it to 0.6 would cut recall to 0.683 with only a small gain in precision (0.136 to 0.160).
+
+% Two plots side by side: each minipage gets its own caption and label.
+\begin{figure}[!htb]
+\centering
+\begin{minipage}[b]{0.41\textwidth}
+\centering
+\includegraphics[width=\textwidth]{threshold.png}
+\caption{Cross-validated precision, recall and share flagged against the decision threshold (training rows).}
+\label{fig:thresh}
+\end{minipage}\hfill
+\begin{minipage}[b]{0.56\textwidth}
+\centering
+\includegraphics[width=\textwidth]{confusion_matrix.png}
+\caption{Test-set confusion matrices for the unweighted model and the final balanced model.}
+\label{fig:cm}
+\end{minipage}
+\end{figure}
+
+\textbf{Test set.}
+On the test set the unweighted model missed all 50 strokes, whereas the final model caught 36 of them (Figure~\ref{fig:cm}), with a ROC-AUC of 0.826.
+The cost is 235 false alarms, so about 1 in 7.5 flagged patients had a stroke; in screening, a missed stroke is far worse than an extra check, so this trade-off is acceptable.
+
+\textbf{Efficiency.}
+The hardware used for this exercise is a Lenovo Legion ACH6H (AMD Ryzen 7 5800H) with 32GB RAM, running the Linux distro Pop!\_OS with Python 3.12.3 and sklearn 1.9.1; timings vary between runs and with background load, so they are approximate.
+Fitting the final model on 4,087 rows took about 19\,ms, predicting 1,022 patients took about 5\,ms, and peak Python memory during fitting (measured with \texttt{tracemalloc}, which does not count all C-level allocations) was 1.61\,MB.
+Balanced weighting made no meaningful difference to cost (unweighted: 21.8\,ms fit, 5.4\,ms predict, 1.61\,MB).
+Fit time grew roughly linearly with training size, from about 13\,ms at 650 rows to 18.5\,ms at 3,270 rows (Figure~\ref{fig:lc}), but this is only 1.4 times the cost for 5 times the rows, so a fixed overhead of about 11\,ms dominates and the scaling evidence is limited.

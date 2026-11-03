@@ -1,0 +1,44 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{capt-of}
+\usepackage{listings}
+\usepackage{wrapfig}
+\usepackage{xcolor}
+\usepackage{gensymb}
+\usepackage{epsfig}
+\usepackage{longtable}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[backend=biber, style=ieee]{biblatex}
+\usepackage{hyperref}   % keep this near the end
+
+\graphicspath{{figures/}}
+\addbibresource{references.bib}
+
+\topmargin-19mm
+\oddsidemargin0mm
+\textwidth170mm
+\textheight230mm
+\parindent0mm
+\pagenumbering{arabic}
+
+\title{\vspace{-3em}\includegraphics[height=2.5cm]{uofg_logo.png}\\[1em]
+ENG4200 Intro to AI/ML CW1 Report\\\large Dataset: Stroke Prediction}
+\author{Alicja Potoniec - 2687140P}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\input{sections/objective}
+\input{sections/pipeline-design}
+\input{sections/key-results}
+\input{sections/analysis-reflection}
+\input{sections/next-steps}
+
+\printbibliography
+\input{sections/appendix}
+\end{document}
