@@ -1,0 +1,8 @@
+# Course PDFs (briefs/slides/templates)
+*.pdf
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
